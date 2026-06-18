@@ -67,6 +67,9 @@ public class GetBoardHandler(
             n.Id, n.Content, n.CreatedByUserId, n.CreatedByName,
             n.CreatedAt, n.StartsAt, n.ExpiresAt, n.IsActive)).ToList().AsReadOnly();
 
+        var meetingsToday = todayEvents.Count;
+        var tasksDue = 0; // from Project Tracker tasks
+
         return new BoardViewModel(
             now.ToString("hh:mm:ss tt"),
             today.ToString("dddd, d MMMM yyyy"),
@@ -77,7 +80,7 @@ public class GetBoardHandler(
             currentEvent, recentlyEnded, nextEvent,
             todayEvents.AsReadOnly(),
             weekHighlights.AsReadOnly(),
-            kpis.MeetingsToday, kpis.TasksDue, kpis.ActiveProjects, kpis.Risks,
+            meetingsToday, tasksDue, kpis.ActiveProjects, kpis.Risks,
             Array.Empty<BoardAnnouncementDto>(),
             deadlines,
             noteDtos.Select(n => new BoardNoteDto(n.Content, n.CreatedByName)).ToList().AsReadOnly(),

@@ -29,7 +29,7 @@ public class ProjectSummaryService : IProjectSummaryClient
     {
         using var conn = new MySqlConnection(_connStr);
         var rows = await conn.QueryAsync(
-            "SELECT Title as ProjectTitle, Owner, EndDate, DATEDIFF(EndDate, CURDATE()) as DaysUntilDeadline, ProgressPercentage as ProgressPercent FROM Projects WHERE IsArchived=0 AND EndDate IS NOT NULL ORDER BY EndDate LIMIT 5");
+            "SELECT Title as ProjectTitle, Owner, EndDate, DATEDIFF(EndDate, CURDATE()) as DaysUntilDeadline, ProgressPercentage as ProgressPercent FROM Projects WHERE IsArchived=0 AND EndDate IS NOT NULL ORDER BY ABS(DATEDIFF(EndDate, CURDATE())) LIMIT 5");
         return rows.Select(r => new BoardDeadlineDto(
             (string)r.ProjectTitle, (string)(r.Owner ?? "—"), (DateTime)r.EndDate,
             Convert.ToInt32(r.DaysUntilDeadline), Convert.ToInt32(r.ProgressPercent))).ToList().AsReadOnly();
