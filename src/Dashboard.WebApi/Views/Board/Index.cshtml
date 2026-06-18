@@ -94,7 +94,7 @@
 
     <div class="content-grid eb-fade-in">
         <div class="schedule-panel glass-panel">
-            <div class="section-title"><i class="bi bi-calendar3"></i> Today's Schedule <span style="display:inline-block;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:12px;padding:1px 10px;font-size:var(--eb-fs-section);font-weight:700;margin-left:8px;">@Model.TodayEvents.Count</span></div>
+            <div class="section-title"><i class="bi bi-calendar-check"></i> Today's Schedule <span style="display:inline-block;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:12px;padding:1px 10px;font-size:var(--eb-fs-section);font-weight:700;margin-left:8px;">@Model.TodayEvents.Count</span></div>
             @if (Model.TodayEvents.Count > 0)
             {
                 foreach (var ev in Model.TodayEvents.Take(5))
@@ -127,7 +127,7 @@
         </div>
 
         <div class="schedule-panel glass-panel">
-            <div class="section-title"><i class="bi bi-star-fill"></i> This Week's Highlights <span style="display:inline-block;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:12px;padding:1px 10px;font-size:var(--eb-fs-section);font-weight:700;margin-left:8px;">@Model.WeekHighlights.Count</span></div>
+            <div class="section-title"><i class="bi bi-calendar-week"></i> This Week's Highlights <span style="display:inline-block;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:12px;padding:1px 10px;font-size:var(--eb-fs-section);font-weight:700;margin-left:8px;">@Model.WeekHighlights.Count</span></div>
             @if (Model.WeekHighlights.Count > 0)
             {
                 <div class="highlights-grid">
@@ -159,7 +159,7 @@
 
         <div style="display:flex;flex-direction:column;gap:var(--eb-gap-lg);">
             <div class="glass-panel">
-                <div class="section-title"><i class="bi bi-eye-fill"></i> At a Glance</div>
+                <div class="section-title"><i class="bi bi-speedometer2"></i> At a Glance</div>
                 <div class="kpi-grid">
                     <div class="kpi-card kpi-blue"><div class="kpi-value">@Model.MeetingsToday</div><div class="kpi-label">Meetings Today</div></div>
                     <div class="kpi-card kpi-amber"><div class="kpi-value">@Model.TasksDueToday</div><div class="kpi-label">Tasks Due</div></div>
@@ -182,7 +182,7 @@
             </div>
 
             <div class="glass-panel">
-                <div class="section-title"><i class="bi bi-hourglass-split"></i> Project Deadlines <span style="display:inline-block;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:12px;padding:1px 10px;font-size:var(--eb-fs-section);font-weight:700;margin-left:8px;">@Model.UpcomingDeadlines.Count</span></div>
+                <div class="section-title"><i class="bi bi-calendar2-x"></i> Project Deadlines <span style="display:inline-block;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:12px;padding:1px 10px;font-size:var(--eb-fs-section);font-weight:700;margin-left:8px;">@Model.UpcomingDeadlines.Count</span></div>
                 @if (Model.UpcomingDeadlines.Count > 0)
                 {
                     foreach (var d in Model.UpcomingDeadlines.Take(5))
@@ -205,7 +205,7 @@
             </div>
 
             <div class="glass-panel">
-                <div class="section-title"><i class="bi bi-info-circle-fill"></i> System</div>
+                <div class="section-title"><i class="bi bi-cpu"></i> System</div>
                 <div style="font-size:var(--eb-fs-meta);color:var(--eb-text-2);">
                     <div style="margin-bottom:8px;"><span class="eb-refresh-indicator">Live</span></div>
                     <div style="font-size:0.7rem;color:var(--eb-text-3);">Auto-refresh: @Model.AutoRefreshSeconds s</div>
