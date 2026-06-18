@@ -1,0 +1,15 @@
+/home/ubuntu/dashboard/src/Dashboard.Application/bin/Release/net10.0/Dashboard.Application.deps.json
+/home/ubuntu/dashboard/src/Dashboard.Application/bin/Release/net10.0/Dashboard.Application.dll
+/home/ubuntu/dashboard/src/Dashboard.Application/bin/Release/net10.0/Dashboard.Application.pdb
+/home/ubuntu/dashboard/src/Dashboard.Application/bin/Release/net10.0/Dashboard.Domain.dll
+/home/ubuntu/dashboard/src/Dashboard.Application/bin/Release/net10.0/Dashboard.Domain.pdb
+/home/ubuntu/dashboard/src/Dashboard.Application/obj/Release/net10.0/Dashboard.Application.csproj.AssemblyReference.cache
+/home/ubuntu/dashboard/src/Dashboard.Application/obj/Release/net10.0/Dashboard.Application.GeneratedMSBuildEditorConfig.editorconfig
+/home/ubuntu/dashboard/src/Dashboard.Application/obj/Release/net10.0/Dashboard.Application.AssemblyInfoInputs.cache
+/home/ubuntu/dashboard/src/Dashboard.Application/obj/Release/net10.0/Dashboard.Application.AssemblyInfo.cs
+/home/ubuntu/dashboard/src/Dashboard.Application/obj/Release/net10.0/Dashboard.Application.csproj.CoreCompileInputs.cache
+/home/ubuntu/dashboard/src/Dashboard.Application/obj/Release/net10.0/Dashboar.CA71C2B6.Up2Date
+/home/ubuntu/dashboard/src/Dashboard.Application/obj/Release/net10.0/Dashboard.Application.dll
+/home/ubuntu/dashboard/src/Dashboard.Application/obj/Release/net10.0/refint/Dashboard.Application.dll
+/home/ubuntu/dashboard/src/Dashboard.Application/obj/Release/net10.0/Dashboard.Application.pdb
+/home/ubuntu/dashboard/src/Dashboard.Application/obj/Release/net10.0/ref/Dashboard.Application.dll

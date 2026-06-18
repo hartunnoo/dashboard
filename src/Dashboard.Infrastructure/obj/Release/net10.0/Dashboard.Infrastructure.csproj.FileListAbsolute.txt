@@ -1,0 +1,17 @@
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/bin/Release/net10.0/Dashboard.Infrastructure.deps.json
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/bin/Release/net10.0/Dashboard.Infrastructure.dll
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/bin/Release/net10.0/Dashboard.Infrastructure.pdb
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/bin/Release/net10.0/Dashboard.Application.dll
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/bin/Release/net10.0/Dashboard.Domain.dll
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/bin/Release/net10.0/Dashboard.Application.pdb
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/bin/Release/net10.0/Dashboard.Domain.pdb
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/obj/Release/net10.0/Dashboard.Infrastructure.csproj.AssemblyReference.cache
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/obj/Release/net10.0/Dashboard.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/obj/Release/net10.0/Dashboard.Infrastructure.AssemblyInfoInputs.cache
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/obj/Release/net10.0/Dashboard.Infrastructure.AssemblyInfo.cs
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/obj/Release/net10.0/Dashboard.Infrastructure.csproj.CoreCompileInputs.cache
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/obj/Release/net10.0/Dashboar.8846AFFD.Up2Date
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/obj/Release/net10.0/Dashboard.Infrastructure.dll
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/obj/Release/net10.0/refint/Dashboard.Infrastructure.dll
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/obj/Release/net10.0/Dashboard.Infrastructure.pdb
+/home/ubuntu/dashboard/src/Dashboard.Infrastructure/obj/Release/net10.0/ref/Dashboard.Infrastructure.dll

@@ -1,0 +1,11 @@
+/home/ubuntu/dashboard/src/Dashboard.Domain/bin/Release/net10.0/Dashboard.Domain.deps.json
+/home/ubuntu/dashboard/src/Dashboard.Domain/bin/Release/net10.0/Dashboard.Domain.dll
+/home/ubuntu/dashboard/src/Dashboard.Domain/bin/Release/net10.0/Dashboard.Domain.pdb
+/home/ubuntu/dashboard/src/Dashboard.Domain/obj/Release/net10.0/Dashboard.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/home/ubuntu/dashboard/src/Dashboard.Domain/obj/Release/net10.0/Dashboard.Domain.AssemblyInfoInputs.cache
+/home/ubuntu/dashboard/src/Dashboard.Domain/obj/Release/net10.0/Dashboard.Domain.AssemblyInfo.cs
+/home/ubuntu/dashboard/src/Dashboard.Domain/obj/Release/net10.0/Dashboard.Domain.csproj.CoreCompileInputs.cache
+/home/ubuntu/dashboard/src/Dashboard.Domain/obj/Release/net10.0/Dashboard.Domain.dll
+/home/ubuntu/dashboard/src/Dashboard.Domain/obj/Release/net10.0/refint/Dashboard.Domain.dll
+/home/ubuntu/dashboard/src/Dashboard.Domain/obj/Release/net10.0/Dashboard.Domain.pdb
+/home/ubuntu/dashboard/src/Dashboard.Domain/obj/Release/net10.0/ref/Dashboard.Domain.dll

@@ -1,0 +1,23 @@
+[Unit]
+Description=Dashboard Service — Enterprise Board TV Display
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/dashboard
+ExecStart=/usr/share/dotnet/dotnet /opt/dashboard/Dashboard.WebApi.dll
+Restart=always
+RestartSec=10
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://localhost:5220
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+User=ubuntu
+Group=ubuntu
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=dashboard-service
+NoNewPrivileges=true
+ReadWritePaths=/opt/dashboard/logs
+
+[Install]
+WantedBy=multi-user.target

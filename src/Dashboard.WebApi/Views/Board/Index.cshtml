@@ -1,0 +1,215 @@
+@model Dashboard.Application.DTOs.BoardViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1920, initial-scale=1.0" />
+    <title>Enterprise Board — Project Tracker AI</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/board.css" />
+</head>
+<body>
+<div class="enterprise-board">
+    <header class="board-header">
+        <div class="board-header-brand">
+            <div class="board-brand-icon"><i class="bi bi-grid-3x3-gap-fill"></i></div>
+            <div class="board-brand-text">
+                <div class="board-brand-name">Project Tracker AI</div>
+                <div class="board-brand-sub">Enterprise Command Centre</div>
+                <div class="board-brand-org">Prime Minister's Office</div>
+            </div>
+        </div>
+        <div class="board-clock-block">
+            <div class="board-clock" id="eb-clock">@Model.CurrentTime</div>
+            <div class="board-date" id="eb-date">@Model.CurrentDate</div>
+            @if (!string.IsNullOrEmpty(Model.HijriDate))
+            { <div class="board-hijri">@Model.HijriDate</div> }
+            <div class="board-status-dot">System Online</div>
+        </div>
+    </header>
+
+    <div class="hero-row eb-fade-in">
+        <div class="hero-card glass-panel glow-green">
+            <div class="hero-card-label green"><span class="live-dot"></span> Now Happening</div>
+            @if (Model.CurrentEvent is not null)
+            {
+                <div class="hero-card-title">@Model.CurrentEvent.Title</div>
+                <div class="hero-card-meta">
+                    <span><i class="bi bi-clock"></i> @Model.CurrentEvent.StartTime – @Model.CurrentEvent.EndTime</span>
+                    @if (!string.IsNullOrEmpty(Model.CurrentEvent.Location))
+                    { <span><i class="bi bi-geo-alt"></i> @Model.CurrentEvent.Location</span> }
+                    <span><i class="bi bi-people"></i> @Model.CurrentEvent.ParticipantCount</span>
+                </div>
+                @if (Model.CurrentEvent.End.HasValue)
+                {
+                    <div class="hero-card-countdown" data-countdown="@(new DateTimeOffset(Model.CurrentEvent.End.Value, TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="Ends">Ends in —</div>
+                }
+            }
+            else
+            { <div class="hero-card-title">All clear</div> }
+        </div>
+
+        <div class="hero-card glass-panel glow-blue">
+            <div class="hero-card-label blue">Up Next</div>
+            @if (Model.RecentlyEndedEvent is not null)
+            {
+                <div class="hero-card-title">@Model.RecentlyEndedEvent.Title</div>
+                <div class="hero-card-meta">
+                    <span><i class="bi bi-clock"></i> @Model.RecentlyEndedEvent.StartTime – @Model.RecentlyEndedEvent.EndTime</span>
+                    @if (!string.IsNullOrEmpty(Model.RecentlyEndedEvent.Location))
+                    { <span><i class="bi bi-geo-alt"></i> @Model.RecentlyEndedEvent.Location</span> }
+                </div>
+                <div class="hero-card-countdown" style="color:var(--eb-text-3);">@Model.RecentlyEndedEvent.EndedAgo</div>
+            }
+            else if (Model.NextEvent is not null)
+            {
+                <div class="hero-card-title">@Model.NextEvent.Title</div>
+                <div class="hero-card-meta">
+                    <span><i class="bi bi-clock"></i> @Model.NextEvent.StartTime – @Model.NextEvent.EndTime</span>
+                    @if (!string.IsNullOrEmpty(Model.NextEvent.Location))
+                    { <span><i class="bi bi-geo-alt"></i> @Model.NextEvent.Location</span> }
+                    <span><i class="bi bi-people"></i> @Model.NextEvent.ParticipantCount</span>
+                </div>
+                <div class="hero-card-countdown" data-countdown="@(new DateTimeOffset(Model.NextEvent.Start, TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="Starts">Starts —</div>
+            }
+            else
+            { <div class="hero-card-title">All clear</div> }
+        </div>
+    </div>
+
+    <div class="content-grid eb-fade-in">
+        <div class="schedule-panel glass-panel">
+            <div class="section-title"><i class="bi bi-calendar3"></i> Today's Schedule <span style="display:inline-block;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:12px;padding:1px 10px;font-size:0.73rem;font-weight:500;margin-left:8px;">@Model.TodayEvents.Count</span></div>
+            @if (Model.TodayEvents.Count > 0)
+            {
+                foreach (var ev in Model.TodayEvents.Take(5))
+                {
+                    var catColor = ev.CategoryColor ?? "#3b82f6";
+                    <div class="today-card @(ev.IsLive ? "tc-live" : ev.IsEnded ? "tc-ended" : "")" style="--tc-color: @catColor;cursor:pointer" data-event-id="@ev.Id" title="Click to edit">
+                        <div class="tc-time-pillar">
+                            <span class="tc-time-start">@ev.StartTime</span>
+                            @if (ev.EndTime != null) { <span class="tc-time-end">→ @ev.EndTime</span> }
+                            @if (ev.IsLive) { <span class="tc-live-dot"><span class="tc-live-pulse"></span>LIVE</span> }
+                        </div>
+                        <div class="tc-body">
+                            <div class="tc-title">@ev.Title @if (ev.IsEnded) { <span class="tc-done-badge">Done</span> }</div>
+                            <div class="tc-meta">
+                                @if (!string.IsNullOrEmpty(ev.CategoryName)) { <span class="tc-category" style="background:@catColor">@ev.CategoryName</span> }
+                                @if (!string.IsNullOrEmpty(ev.Stakeholder)) { <span class="tc-stakeholder"><i class="bi bi-person-badge"></i> @ev.Stakeholder</span> }
+                                @if (!string.IsNullOrEmpty(ev.Duration) && ev.Duration != "All Day") { <span class="tc-duration">@ev.Duration</span> }
+                            </div>
+                        </div>
+                        <div class="tc-countdown">
+                            @if (ev.IsEnded && ev.End.HasValue)
+                            { <span class="tc-countdown-text" data-countdown="@(new DateTimeOffset(ev.End.Value.AddHours(2), TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="Clears">@ev.EndedAgo</span> }
+                            else
+                            { <span class="tc-countdown-text" data-countdown="@(new DateTimeOffset(ev.Start, TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="Starts"></span> }
+                        </div>
+                    </div>
+                }
+            }
+            else { <div class="eb-empty">No events scheduled for today</div> }
+        </div>
+
+        <div class="schedule-panel glass-panel">
+            <div class="section-title"><i class="bi bi-star-fill"></i> This Week's Highlights <span style="display:inline-block;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:12px;padding:1px 10px;font-size:0.73rem;font-weight:500;margin-left:8px;">@Model.WeekHighlights.Count</span></div>
+            @if (Model.WeekHighlights.Count > 0)
+            {
+                <div class="highlights-grid">
+                @foreach (var ev in Model.WeekHighlights.Take(6))
+                {
+                    var catColor = ev.CategoryColor ?? "#3b82f6";
+                    <div class="highlight-card" style="--hl-color: @catColor;cursor:pointer" data-event-id="@ev.Id" title="Click to edit">
+                        <div class="hl-date-badge">
+                            <span class="hl-day">@ev.Start.ToString("ddd")</span>
+                            <span class="hl-date">@ev.Start.ToString("d MMM")</span>
+                        </div>
+                        <div class="hl-body">
+                            <div class="hl-title">@ev.Title</div>
+                            <div class="hl-meta">
+                                @if (!string.IsNullOrEmpty(ev.CategoryName)) { <span class="hl-category" style="background:@catColor">@ev.CategoryName</span> }
+                                <span class="hl-time"><i class="bi bi-clock"></i> @(ev.AllDay ? "All Day" : ev.StartTime)</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(ev.Stakeholder)) { <div class="hl-stakeholder"><i class="bi bi-person-badge"></i> @ev.Stakeholder</div> }
+                            <div class="hl-countdown">
+                                <i class="bi bi-hourglass-split"></i> <span class="hl-countdown-text" data-countdown="@(new DateTimeOffset(ev.Start, TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="Starts">—</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+                </div>
+            }
+            else { <div class="eb-empty">No highlights this week</div> }
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:var(--eb-gap-lg);">
+            <div class="glass-panel">
+                <div class="section-title"><i class="bi bi-eye-fill"></i> At a Glance</div>
+                <div class="kpi-grid">
+                    <div class="kpi-card kpi-blue"><div class="kpi-value">@Model.MeetingsToday</div><div class="kpi-label">Meetings Today</div></div>
+                    <div class="kpi-card kpi-amber"><div class="kpi-value">@Model.TasksDueToday</div><div class="kpi-label">Tasks Due</div></div>
+                    <div class="kpi-card kpi-green"><div class="kpi-value">@Model.ActiveProjects</div><div class="kpi-label">Projects Active</div></div>
+                    <div class="kpi-card @(Model.RisksRequiringAttention > 0 ? "kpi-red" : "kpi-green")"><div class="kpi-value">@Model.RisksRequiringAttention</div><div class="kpi-label">Risks to Watch</div></div>
+                </div>
+                @if (Model.PrayerTimes.Count > 0)
+                {
+                    <div style="margin-top:20px;">
+                        <div class="section-title"><i class="bi bi-moon-stars"></i> Prayer Times</div>
+                        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                            @foreach (var pt in Model.PrayerTimes)
+                            {
+                                var isCurrent = pt.Name == Model.CurrentPrayer;
+                                <span style="padding:10px 16px;border-radius:6px;font-size:1.4rem;@(isCurrent ? "background:rgba(201,168,76,.2);color:var(--eb-accent);border:1px solid rgba(201,168,76,.3);" : "color:var(--eb-text-2);")">@pt.Name @pt.Time</span>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="glass-panel">
+                <div class="section-title"><i class="bi bi-hourglass-split"></i> Project Deadlines <span style="display:inline-block;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:12px;padding:1px 10px;font-size:0.73rem;font-weight:500;margin-left:8px;">@Model.UpcomingDeadlines.Count</span></div>
+                @if (Model.UpcomingDeadlines.Count > 0)
+                {
+                    foreach (var d in Model.UpcomingDeadlines.Take(5))
+                    {
+                        var urgency = d.DaysUntilDeadline <= 0 ? "overdue" : d.DaysUntilDeadline <= 1 ? "urgent" : d.DaysUntilDeadline <= 3 ? "soon" : "ok";
+                        <div class="deadline-card @urgency" style="cursor:pointer" data-project-deadline="@d.ProjectTitle">
+                            <div class="dl-countdown @urgency"><span class="dl-days">@(d.DaysUntilDeadline <= 0 ? "!" : d.DaysUntilDeadline + "d")</span><span class="dl-label">@(d.DaysUntilDeadline <= 0 ? "OVERDUE" : d.DaysUntilDeadline == 1 ? "day left" : "days left")</span></div>
+                            <div class="dl-body">
+                                <div class="dl-title">@d.ProjectTitle</div>
+                                <div class="dl-meta">
+                                    <span class="dl-owner"><i class="bi bi-person"></i> @d.Owner</span>
+                                    <span class="dl-date"><i class="bi bi-flag"></i> @d.EndDate.ToString("d MMM")</span>
+                                </div>
+                                <div class="dl-progress"><div class="dl-progress-bar" style="width:@d.ProgressPercent%;background:@(d.ProgressPercent >= 80 ? "#22c55e" : d.ProgressPercent >= 50 ? "#f59e0b" : "#ef4444")"></div></div>
+                            </div>
+                        </div>
+                    }
+                }
+                else { <div class="eb-empty">No upcoming deadlines</div> }
+            </div>
+
+            <div class="glass-panel">
+                <div class="section-title"><i class="bi bi-info-circle-fill"></i> System</div>
+                <div style="font-size:var(--eb-fs-meta);color:var(--eb-text-2);">
+                    <div style="margin-bottom:8px;"><span class="eb-refresh-indicator">Live</span></div>
+                    <div style="font-size:0.7rem;color:var(--eb-text-3);">Auto-refresh: @Model.AutoRefreshSeconds s</div>
+                    <button id="eb-theme-btn" class="btn btn-sm btn-outline-secondary mt-2" style="font-size:0.7rem;"><i class="bi bi-sun-fill"></i> Theme</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/board.js" asp-append-version="true"></script>
+<script>
+setTimeout(function(){var e=document.querySelectorAll("[data-countdown]");if(e.length){function t(){e.forEach(function(e){var n=parseInt(e.getAttribute("data-countdown"),10)||0,a=n-Math.floor(Date.now()/1e3),l=e.getAttribute("data-label")||"";if(a<=0){e.textContent="Clears"===l?"Cleared":"Ends"===l?"Ended":"Now";return}var d=Math.floor(a/86400),h=Math.floor(a%86400/3600),m=Math.floor(a%3600/60),s=Math.floor(a%60);if(d>0){e.textContent=l+" in "+d+"d "+h+"h"}else if(h>0){e.textContent=l+" in "+h+"h "+m+"m"}else{e.textContent=l+" in "+m+"m "+s+"s"}})}setInterval(t,1e3),t()}},500);
+</script>
+</body>
+</html>
