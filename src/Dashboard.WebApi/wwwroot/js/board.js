@@ -13,13 +13,13 @@
   var COUNTDOWN_UPDATE_MS = 1000;
   var CD_LABEL_CLEARS = 'Clears';
   var CD_LABEL_ENDS   = 'Ends';
+  var CD_LABEL_STARTS = 'Starts';
   var STORAGE_KEY = 'eb-fullscreen';
   var FADE_CLASS = 'eb-fade-in';
 
   /* ── DOM refs ───────────────────────────────────────────── */
   var clockEl = document.getElementById('eb-clock');
   var dateEl = document.getElementById('eb-date');
-  var hijriEl = document.getElementById('eb-hijri');
   var refreshEl = document.getElementById('eb-refresh-time');
   var countdownEls = document.querySelectorAll('[data-countdown]');
   var announceEls = document.querySelectorAll('.announcement-card');
@@ -38,15 +38,14 @@
 
   /* ── Countdown updater ──────────────────────────────────── */
   function updateCountdowns() {
-    var els = document.querySelectorAll('[data-countdown]');
-    els.forEach(function (el) {
+    countdownEls.forEach(function (el) {
       var target = parseInt(el.getAttribute('data-countdown'), 10);
       if (!target || target === 0) return;
       var nowUnix = Math.floor(Date.now() / 1000);
       var diff = target - nowUnix;
       var label = el.getAttribute('data-label') || '';
       if (diff <= 0) {
-        el.textContent = label === CD_LABEL_CLEARS ? 'Cleared' : (label === CD_LABEL_ENDS ? 'Ended' : 'Now');
+        el.textContent = label === CD_LABEL_CLEARS ? 'Cleared' : (label === CD_LABEL_ENDS ? 'Ended' : (label === CD_LABEL_STARTS ? 'Started' : 'Now'));
         return;
       }
       var d = Math.floor(diff / 86400);
@@ -75,7 +74,6 @@
 
   /* ── Auto refresh ───────────────────────────────────────── */
   function autoRefresh() {
-    var now = new Date();
     if (refreshEl) refreshEl.textContent = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Brunei', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
     // Save scroll position before reload so mobile users aren't thrown to top
     sessionStorage.setItem('eb-scroll-x', window.scrollX);

@@ -1,6 +1,9 @@
 @model Dashboard.Application.DTOs.BoardViewModel
 @{
     Layout = null;
+    const string LblEnds   = "Ends";
+    const string LblStarts = "Starts";
+    const string LblClears = "Clears";
 }
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -39,9 +42,9 @@
     </header>
 
     <div class="hero-row eb-fade-in">
-        @{ var liveEvents = Model.TodayEvents.Where(e => e.IsLive).Take(4).ToList(); }
+        @{ var allLive = Model.TodayEvents.Where(e => e.IsLive).ToList(); var liveEvents = allLive.Take(4).ToList(); }
         <div class="hero-card glass-panel glow-green">
-            <div class="hero-card-label green"><span class="live-dot"></span> Now Happening <span style="font-size:var(--eb-fs-badge);opacity:.7;margin-left:auto;">@liveEvents.Count live</span></div>
+            <div class="hero-card-label green"><span class="live-dot"></span> Now Happening <span style="font-size:var(--eb-fs-badge);opacity:.7;margin-left:auto;">@allLive.Count live</span></div>
             @if (liveEvents.Count > 0)
             {
                 @foreach (var ev in liveEvents)
@@ -56,7 +59,7 @@
                     </div>
                     @if (ev.End.HasValue)
                     {
-                        <div class="hero-card-countdown" style="font-size:var(--eb-fs-meta);margin-top:0;margin-bottom:12px;" data-countdown="@(new DateTimeOffset(ev.End.Value, TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="Ends">Ends in —</div>
+                        <div class="hero-card-countdown" style="font-size:var(--eb-fs-meta);margin-top:0;margin-bottom:12px;" data-countdown="@(new DateTimeOffset(ev.End.Value, TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="@LblEnds">—</div>
                     }
                 }
             }
@@ -85,7 +88,7 @@
                     { <span><i class="bi bi-geo-alt"></i> @Model.NextEvent.Location</span> }
                     <span><i class="bi bi-people"></i> @Model.NextEvent.ParticipantCount</span>
                 </div>
-                <div class="hero-card-countdown" data-countdown="@(new DateTimeOffset(Model.NextEvent.Start, TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="Starts">Starts —</div>
+                <div class="hero-card-countdown" data-countdown="@(new DateTimeOffset(Model.NextEvent.Start, TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="@LblStarts">—</div>
             }
             else
             { <div class="hero-card-title">All clear</div> }
@@ -97,7 +100,7 @@
             <div class="section-title"><i class="bi bi-calendar-check"></i> Today's Schedule <span style="display:inline-block;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:12px;padding:1px 10px;font-size:var(--eb-fs-section);font-weight:700;margin-left:8px;">@Model.TodayEvents.Count</span></div>
             @if (Model.TodayEvents.Count > 0)
             {
-                foreach (var ev in Model.TodayEvents.Take(5))
+                foreach (var ev in Model.TodayEvents.Where(e => !e.IsLive).OrderBy(e => e.IsEnded).Take(5))
                 {
                     var catColor = ev.CategoryColor ?? "#3b82f6";
                     <div class="today-card @(ev.IsLive ? "tc-live" : ev.IsEnded ? "tc-ended" : "")" style="--tc-color: @catColor;cursor:pointer" data-event-id="@ev.Id" title="Click to edit">
@@ -114,12 +117,10 @@
                                 @if (!string.IsNullOrEmpty(ev.Duration) && ev.Duration != "All Day") { <span class="tc-duration">@ev.Duration</span> }
                             </div>
                         </div>
-                        <div class="tc-countdown">
-                            @if (ev.IsEnded && ev.End.HasValue)
-                            { <span class="tc-countdown-text" data-countdown="@(new DateTimeOffset(ev.End.Value.AddHours(2), TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="Clears">@ev.EndedAgo</span> }
-                            else
-                            { <span class="tc-countdown-text" data-countdown="@(new DateTimeOffset(ev.Start, TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="Starts"></span> }
-                        </div>
+                        @if (ev.IsEnded && ev.End.HasValue)
+                        { <div class="hero-card-countdown" style="font-size:var(--eb-fs-meta);margin-top:0;margin-bottom:0;" data-countdown="@(new DateTimeOffset(ev.End.Value.AddHours(2), TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="@LblClears">—</div> }
+                        else
+                        { <div class="hero-card-countdown" style="font-size:var(--eb-fs-meta);margin-top:0;margin-bottom:0;" data-countdown="@(new DateTimeOffset(ev.Start, TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="@LblStarts">—</div> }
                     </div>
                 }
             }
@@ -147,7 +148,7 @@
                             </div>
                             @if (!string.IsNullOrEmpty(ev.Stakeholder)) { <div class="hl-stakeholder"><i class="bi bi-person-badge"></i> @ev.Stakeholder</div> }
                             <div class="hl-countdown">
-                                <i class="bi bi-hourglass-split"></i> <span class="hl-countdown-text" data-countdown="@(new DateTimeOffset(ev.Start, TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="Starts">—</span>
+                                <i class="bi bi-hourglass-split"></i> <div class="hero-card-countdown" style="font-size:var(--eb-fs-meta);margin-top:0;margin-bottom:0;display:inline;" data-countdown="@(new DateTimeOffset(ev.Start, TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="@LblStarts">—</div>
                             </div>
                         </div>
                     </div>
@@ -162,7 +163,7 @@
                 <div class="section-title"><i class="bi bi-speedometer2"></i> At a Glance</div>
                 <div class="kpi-grid">
                     <div class="kpi-card kpi-blue"><div class="kpi-value">@Model.MeetingsToday</div><div class="kpi-label">Events Today</div></div>
-                    <div class="kpi-card kpi-amber"><div class="kpi-value">@Model.TasksDueToday</div><div class="kpi-label">Tasks Due</div></div>
+                    <div class="kpi-card kpi-amber"><div class="kpi-value">@Model.UpcomingDeadlines.Count</div><div class="kpi-label">Deadlines</div></div>
                     <div class="kpi-card kpi-green"><div class="kpi-value">@Model.ActiveProjects</div><div class="kpi-label">Projects Active</div></div>
                     <div class="kpi-card @(Model.RisksRequiringAttention > 0 ? "kpi-red" : "kpi-green")"><div class="kpi-value">@Model.RisksRequiringAttention</div><div class="kpi-label">Risks to Watch</div></div>
                 </div>
@@ -224,9 +225,6 @@
 </script>
 <script>
     @Html.Raw(System.IO.File.ReadAllText(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot", "js", "board.js")))
-</script>
-<script>
-setTimeout(function(){var e=document.querySelectorAll("[data-countdown]");if(e.length){function t(){e.forEach(function(e){var n=parseInt(e.getAttribute("data-countdown"),10)||0,a=n-Math.floor(Date.now()/1e3),l=e.getAttribute("data-label")||"";if(a<=0){e.textContent="Clears"===l?"Cleared":"Ends"===l?"Ended":"Now";return}var d=Math.floor(a/86400),h=Math.floor(a%86400/3600),m=Math.floor(a%3600/60),s=Math.floor(a%60);if(d>0){e.textContent=l+" in "+d+"d "+h+"h"}else{e.textContent=l+" in "+h+"h "+m+"m"}})}setInterval(t,1e3),t()}},500);
 </script>
 </body>
 </html>
