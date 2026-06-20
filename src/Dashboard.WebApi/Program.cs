@@ -22,7 +22,7 @@ try
     builder.Host.UseSerilog();
     if (OperatingSystem.IsWindows()) builder.Host.UseWindowsService();
 
-    builder.Services.AddControllersWithViews();
+    builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddSignalR();

@@ -4,6 +4,7 @@
     const string LblEnds   = "Ends";
     const string LblStarts = "Starts";
     const string LblClears = "Clears";
+    int nLive = 0, nSched = 0, nHigh = 0, nDead = 0;
 }
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -11,12 +12,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0" />
     <title>Enterprise Board — Project Tracker AI</title>
-    <style>
-        @Html.Raw(System.IO.File.ReadAllText(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot", "lib", "bootstrap", "dist", "css", "bootstrap.min.css")))
-    </style>
-    <style>
-        @Html.Raw(System.IO.File.ReadAllText(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot", "lib", "bootstrap-icons", "font", "bootstrap-icons-inline.css")))
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" crossorigin="anonymous">
     <style>
         @Html.Raw(System.IO.File.ReadAllText(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot", "css", "board.css")))
     </style>
@@ -38,6 +35,8 @@
             @if (!string.IsNullOrEmpty(Model.HijriDate))
             { <div class="board-hijri">@Model.HijriDate</div> }
             <div class="board-status-dot">System Online</div>
+            @if (Model.IsPortfolioManager)
+            { <div class="board-role-badge">🔒 Portfolio Manager</div> }
         </div>
     </header>
 
@@ -49,7 +48,7 @@
             {
                 @foreach (var ev in liveEvents)
                 {
-                    <div class="hero-card-title" style="font-size:var(--eb-fs-event-title);margin-bottom:4px;">@ev.Title</div>
+                    <div class="hero-card-title" style="font-size:var(--eb-fs-event-title);margin-bottom:4px;"><span class="live-index">@(++nLive)</span> @ev.Title</div>
                     <div class="hero-card-meta" style="margin-bottom:8px;">
                         <span><i class="bi bi-clock"></i> @ev.StartTime – @ev.EndTime</span>
                         @if (!string.IsNullOrEmpty(ev.CategoryName))
@@ -105,22 +104,24 @@
                     var catColor = ev.CategoryColor ?? "#3b82f6";
                     <div class="today-card @(ev.IsLive ? "tc-live" : ev.IsEnded ? "tc-ended" : "")" style="--tc-color: @catColor;cursor:pointer" data-event-id="@ev.Id" title="Click to edit">
                         <div class="tc-time-pillar">
+                            <span class="tc-index">@(++nSched)</span>
                             <span class="tc-time-start">@ev.StartTime</span>
                             @if (ev.EndTime != null) { <span class="tc-time-end">→ @ev.EndTime</span> }
                             @if (ev.IsLive) { <span class="tc-live-dot"><span class="tc-live-pulse"></span>LIVE</span> }
                         </div>
                         <div class="tc-body">
-                            <div class="tc-title">@ev.Title @if (ev.IsEnded) { <span class="tc-done-badge">Done</span> }</div>
+                            <div class="tc-title">@ev.Title</div>
                             <div class="tc-meta">
                                 @if (!string.IsNullOrEmpty(ev.CategoryName)) { <span class="tc-category" style="background:@catColor">@ev.CategoryName</span> }
                                 @if (!string.IsNullOrEmpty(ev.Stakeholder)) { <span class="tc-stakeholder"><i class="bi bi-person-badge"></i> @ev.Stakeholder</span> }
                                 @if (!string.IsNullOrEmpty(ev.Duration) && ev.Duration != "All Day") { <span class="tc-duration">@ev.Duration</span> }
+                                @if (ev.IsEnded) { <span class="tc-done-badge">Done</span> }
                             </div>
+                            @if (ev.IsEnded && ev.End.HasValue)
+                            { <div class="tc-countdown-below" data-countdown="@(new DateTimeOffset(ev.End.Value.AddHours(2), TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="@LblClears">Clears —</div> }
+                            else
+                            { <div class="tc-countdown-below" data-countdown="@(new DateTimeOffset(ev.Start, TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="@LblStarts">Starts —</div> }
                         </div>
-                        @if (ev.IsEnded && ev.End.HasValue)
-                        { <div class="hero-card-countdown" style="font-size:var(--eb-fs-meta);margin-top:0;margin-bottom:0;" data-countdown="@(new DateTimeOffset(ev.End.Value.AddHours(2), TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="@LblClears">—</div> }
-                        else
-                        { <div class="hero-card-countdown" style="font-size:var(--eb-fs-meta);margin-top:0;margin-bottom:0;" data-countdown="@(new DateTimeOffset(ev.Start, TimeSpan.FromHours(8)).ToUnixTimeSeconds())" data-label="@LblStarts">—</div> }
                     </div>
                 }
             }
@@ -137,6 +138,7 @@
                     var catColor = ev.CategoryColor ?? "#3b82f6";
                     <div class="highlight-card" style="--hl-color: @catColor;cursor:pointer" data-event-id="@ev.Id" title="Click to edit">
                         <div class="hl-date-badge">
+                            <span class="hl-index">@(++nHigh)</span>
                             <span class="hl-day">@ev.Start.ToString("ddd")</span>
                             <span class="hl-date">@ev.Start.ToString("d MMM")</span>
                         </div>
@@ -161,12 +163,19 @@
         <div style="display:flex;flex-direction:column;gap:var(--eb-gap-lg);">
             <div class="glass-panel">
                 <div class="section-title"><i class="bi bi-speedometer2"></i> At a Glance</div>
+                @if (Model.IsPortfolioManager)
+                {
                 <div class="kpi-grid">
                     <div class="kpi-card kpi-blue"><div class="kpi-value">@Model.MeetingsToday</div><div class="kpi-label">Events Today</div></div>
                     <div class="kpi-card kpi-amber"><div class="kpi-value">@Model.UpcomingDeadlines.Count</div><div class="kpi-label">Deadlines</div></div>
                     <div class="kpi-card kpi-green"><div class="kpi-value">@Model.ActiveProjects</div><div class="kpi-label">Projects Active</div></div>
                     <div class="kpi-card @(Model.RisksRequiringAttention > 0 ? "kpi-red" : "kpi-green")"><div class="kpi-value">@Model.RisksRequiringAttention</div><div class="kpi-label">Risks to Watch</div></div>
                 </div>
+                }
+                else
+                {
+                <div class="eb-empty" style="padding:12px;">Sign in as Portfolio Manager to see KPIs</div>
+                }
                 @if (Model.PrayerTimes.Count > 0)
                 {
                     <div style="margin-top:20px;">
@@ -182,6 +191,8 @@
                 }
             </div>
 
+            @if (Model.IsPortfolioManager)
+            {
             <div class="glass-panel">
                 <div class="section-title"><i class="bi bi-calendar2-x"></i> Project Deadlines <span style="display:inline-block;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:12px;padding:1px 10px;font-size:var(--eb-fs-section);font-weight:700;margin-left:8px;">@Model.UpcomingDeadlines.Count</span></div>
                 @if (Model.UpcomingDeadlines.Count > 0)
@@ -190,7 +201,7 @@
                     {
                         var urgency = d.DaysUntilDeadline <= 0 ? "overdue" : d.DaysUntilDeadline <= 1 ? "urgent" : d.DaysUntilDeadline <= 3 ? "soon" : "ok";
                         <div class="deadline-card @urgency" style="cursor:pointer" data-project-deadline="@d.ProjectTitle">
-                            <div class="dl-countdown @urgency"><span class="dl-days">@(d.DaysUntilDeadline <= 0 ? "!" : d.DaysUntilDeadline + "d")</span><span class="dl-label">@(d.DaysUntilDeadline <= 0 ? "OVERDUE" : d.DaysUntilDeadline == 1 ? "day left" : "days left")</span></div>
+                            <div class="dl-countdown @urgency"><span class="dl-index-num">@(++nDead)</span><span class="dl-days">@(d.DaysUntilDeadline <= 0 ? "!" : d.DaysUntilDeadline + "d")</span><span class="dl-label">@(d.DaysUntilDeadline <= 0 ? "OVERDUE" : d.DaysUntilDeadline == 1 ? "day left" : "days left")</span></div>
                             <div class="dl-body">
                                 <div class="dl-title">@d.ProjectTitle</div>
                                 <div class="dl-meta">
@@ -204,6 +215,7 @@
                 }
                 else { <div class="eb-empty">No upcoming deadlines</div> }
             </div>
+            }
 
             <div class="glass-panel">
                 <div class="section-title"><i class="bi bi-cpu"></i> System</div>
@@ -217,12 +229,8 @@
     </div>
 </div>
 
-<script>
-    @Html.Raw(System.IO.File.ReadAllText(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot", "lib", "jquery", "dist", "jquery.min.js")))
-</script>
-<script>
-    @Html.Raw(System.IO.File.ReadAllText(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot", "lib", "bootstrap", "dist", "js", "bootstrap.bundle.min.js")))
-</script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script>
     @Html.Raw(System.IO.File.ReadAllText(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot", "js", "board.js")))
 </script>

@@ -41,14 +41,16 @@ public class CalendarApiClient : ICalendarApiClient
         var start = e.TryGetProperty("start", out var s) ? ParseDt(s.GetString()) : DateTime.MinValue;
         var end = e.TryGetProperty("end", out var en) && en.ValueKind != JsonValueKind.Null ? ParseDt(en.GetString()) : (DateTime?)null;
         var allDay = e.TryGetProperty("allDay", out var ad) && ad.GetBoolean();
-        var now = DateTime.UtcNow.AddHours(8);
-        var isLive = allDay ? start.Date == now.Date : start <= now && (end.HasValue && end.Value > now);
-        var isEnded = end.HasValue && end.Value < now;
+        // API returns UTC — compare against UTC to correctly determine live/ended
+        var nowUtc = DateTime.UtcNow;
+        var nowBnt = nowUtc.AddHours(8);
+        var isLive = allDay ? start.Date == nowBnt.Date : start <= nowUtc && (end.HasValue && end.Value > nowUtc);
+        var isEnded = end.HasValue && end.Value < nowUtc;
 
         string? countdown = null;
-        if (!isLive && !isEnded && start > now)
+        if (!isLive && !isEnded && start > nowUtc)
         {
-            var diff = start - now;
+            var diff = start - nowUtc;
             countdown = diff.TotalDays >= 1 ? $"in {diff.Days}d {diff.Hours}h" : $"in {diff.Hours}h {diff.Minutes}m";
         }
 

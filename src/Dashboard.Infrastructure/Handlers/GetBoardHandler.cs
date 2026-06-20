@@ -84,7 +84,9 @@ public class GetBoardHandler(
             Array.Empty<BoardAnnouncementDto>(),
             deadlines,
             noteDtos.Select(n => new BoardNoteDto(n.Content, n.CreatedByName)).ToList().AsReadOnly(),
-            now
+            now,
+            IsPortfolioManager: q.IsPortfolioManager,
+            UserDisplayName: q.UserId
         );
     }
 }

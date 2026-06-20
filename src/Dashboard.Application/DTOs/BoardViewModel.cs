@@ -23,7 +23,9 @@ public sealed record BoardViewModel(
     IReadOnlyList<BoardDeadlineDto> UpcomingDeadlines,
     IReadOnlyList<BoardNoteDto> Notes,
     DateTime LastUpdated,
-    int AutoRefreshSeconds = 60
+    int AutoRefreshSeconds = 60,
+    bool IsPortfolioManager = false,
+    string UserDisplayName = ""
 );
 
 public sealed record BoardAnnouncementDto(string Title, string Content, string Severity, string? Icon);
